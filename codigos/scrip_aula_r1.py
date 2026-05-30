@@ -19,7 +19,7 @@ import openpyxl
 
 """
 
-caminho = r"C:\\projects\\imdb\\filmes_imdb\\dados\\filmes_imdb.xlsx"
+caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
 
 df_imdb = pd.read_excel(caminho)
 
