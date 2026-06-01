@@ -2,6 +2,18 @@
 #Objetivo: Entender a estrutura do dataset antes de qualquer limpeza. Nunca limpe o que você não conhece.
 
 
+"""
+
+# Colunas do dataset:
+['id_filme', 'titulo', 'ano_lancamento', 
+'genero', 'duracao_min', 'rating_imdb', 
+'orcamento_milhoes', 'data_lancamento', 
+'bilheteria_dolares', 'nome_pais', 'continente', 
+'idioma_principal', 'moeda', 'capital', 'nome_produtora', 
+'ano_fundacao', 'pais_sede']
+
+"""
+
 # ============================================================
 # EXERCÍCIO 1 — Exploração Inicial
 # ============================================================
@@ -10,7 +22,7 @@
 import pandas as pd  # Pandas: biblioteca principal para manipulação de dados em tabelas
 
 # Definindo o caminho do arquivo Excel
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
+caminho = r"C:\projects\imdb\filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
 
 # Lendo o arquivo Excel e armazenando em um DataFrame
 # Um DataFrame é como uma tabela do Excel dentro do Python
@@ -23,6 +35,8 @@ df_imdb = pd.read_excel(caminho)
 # -----------------------------------------------------------
 print("=== PRIMEIRAS 10 LINHAS ===")
 print(df_imdb.head(10))
+
+print(df_imdb.columns.to_list())  # Mostra a lista de colunas para verificar os nomes e possíveis erros de digitação
 
 # -----------------------------------------------------------
 # 1.2 Verificando informações estruturais da tabela
@@ -47,7 +61,7 @@ print(df_imdb.shape)
 # Muito útil para identificar valores absurdos (outliers)
 # -----------------------------------------------------------
 print("\n=== ESTATÍSTICAS DAS COLUNAS NUMÉRICAS ===")
-print(df_imdb.describe())
+print(df_imdb[['orcamento_milhoes', 'rating_imdb', 'bilheteria_dolares']].describe())
 
 # -----------------------------------------------------------
 # 1.5 Contando valores nulos por coluna
