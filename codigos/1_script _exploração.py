@@ -10,11 +10,12 @@
 import pandas as pd  # Pandas: biblioteca principal para manipulação de dados em tabelas
 
 # Definindo o caminho do arquivo Excel
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
+caminho = r"dados\dados_excel\filmes_imdb.xlsx"
 
 # Lendo o arquivo Excel e armazenando em um DataFrame
 # Um DataFrame é como uma tabela do Excel dentro do Python
 df_imdb = pd.read_excel(caminho)
+
 
 # -----------------------------------------------------------
 # 1.1 Visualizando as primeiras linhas
@@ -22,7 +23,9 @@ df_imdb = pd.read_excel(caminho)
 # Útil para ter uma visão geral do conteúdo
 # -----------------------------------------------------------
 print("=== PRIMEIRAS 10 LINHAS ===")
-print(df_imdb.head(10))
+
+print(df_imdb.head(300))
+
 
 # -----------------------------------------------------------
 # 1.2 Verificando informações estruturais da tabela

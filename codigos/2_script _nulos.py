@@ -1,16 +1,45 @@
 #Identificando e Tratando Valores Nulos  
 #Objetivo: Encontrar, visualizar e decidir o que fazer com cada valor ausente.
 
-
-
 # ============================================================
 # EXERCÍCIO 2 — Valores Nulos
 # ============================================================
 
 import pandas as pd
-
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
+caminho = r"dados\dados_excel\filmes_imdb.xlsx"
 df_imdb = pd.read_excel(caminho)
+
+"""
+id_filme              0
+titulo                1
+ano_lancamento        0
+genero                0
+duracao_min           1
+rating_imdb           0
+orcamento_milhoes     1
+data_lancamento       1
+bilheteria_dolares    1
+nome_pais             3
+continente            3
+idioma_principal      3
+moeda                 3
+capital               3
+nome_produtora        3
+ano_fundacao          3
+pais_sede             3
+dtype: int64
+
+Inglourious Basterds         
+42          Pulp Fiction         
+44                Avatar        
+46          Forrest Gump       
+47         Unknown Movie          
+48            Test Movie         
+49                   NaN         
+
+"""
+
+
 
 # -----------------------------------------------------------
 # 2.1 Visualizando as linhas que contêm pelo menos um nulo
@@ -20,9 +49,25 @@ df_imdb = pd.read_excel(caminho)
 # -----------------------------------------------------------
 print("=== LINHAS COM VALORES NULOS ===")
 linhas_com_nulo = df_imdb[df_imdb.isnull().any(axis=1)]
-print(linhas_com_nulo[['id_filme', 'titulo', 'ano_lancamento',
-                         'duracao_min', 'rating_imdb',
-                         'orcamento_milhoes', 'bilheteria_dolares']])
+print(linhas_com_nulo[[
+'titulo', 'duracao_min', 'orcamento_milhoes',
+'data_lancamento','bilheteria_dolares'             
+]])
+
+print("=== LINHAS COM VALORES NULOS ===")
+linhas_com_nulo = df_imdb[df_imdb.isnull().any(axis=1)]
+print(linhas_com_nulo[[
+'titulo', 'nome_pais',
+'continente', 'idioma_principal', 'moeda',
+'capital'             
+]])
+
+print("=== LINHAS COM VALORES NULOS ===")
+linhas_com_nulo = df_imdb[df_imdb.isnull().any(axis=1)]
+print(linhas_com_nulo[[
+'titulo','nome_produtora', 'ano_fundacao', 'pais_sede'             
+]])
+
 
 # -----------------------------------------------------------
 # 2.2 Tratamento 1: Preencher nulos em 'orcamento_milhoes'
@@ -57,3 +102,4 @@ print(f"Linhas após remover títulos nulos: {len(df_imdb)}")
 # -----------------------------------------------------------
 print("\n=== NULOS RESTANTES POR COLUNA ===")
 print(df_imdb.isnull().sum())
+

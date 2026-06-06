@@ -20,7 +20,6 @@ Isso é ótimo para praticar a modificação de células específicas usando .lo
 # MÉTODOS/FORMAS POSSÍVEIS DE RESOLVE RO PROBLEMA 
 
 # 1
-
 # ============================================================
 # MODIFICANDO UMA CÉLULA ESPECÍFICA COM .loc[]
 # ============================================================
