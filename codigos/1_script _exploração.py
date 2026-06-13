@@ -8,6 +8,7 @@
 
 # Importando as bibliotecas necessárias
 import pandas as pd  # Pandas: biblioteca principal para manipulação de dados em tabelas
+import numpy as np
 
 # Definindo o caminho do arquivo Excel
 caminho = r"dados\dados_excel\filmes_imdb.xlsx"
@@ -67,4 +68,69 @@ print(df_imdb.isnull().sum())
 # Colunas com Non-Null Count < 100 têm dados faltando
 # No describe(), veja o max de rating_imdb — vai aparecer um valor absurdo como 20
 # No describe(), veja o min de duracao_min — pode aparecer 0 ou erro
+
+#=================
+
+# Verificar se há nomes errados nas colunas
+
+print(df_imdb['genero'].unique().tolist())
+
+
+# Padronizar os nomes errados
+
+df_imdb['genero'] = df_imdb['genero'].replace(
+    {'Crime': 'Crime', 
+ 'Action': 'Ação', 
+ 'Drama': 'Drama', 
+ 'Sci-Fi': 'Ficção', 
+ 'SciFi': 'Ficção', 
+ 'Fantasy': 'Fantasia', 
+ 'Fantasia': 'Fantasia', 
+ 'Science Fiction': 'Ficção', 
+ 'Thriller': 'Terror', 
+ 'Thriler': 'Terror', 
+ 'Adventure': 'Aventura', 
+ 'Animation': 'Animação', 
+ 'Romance': 'Romance', 
+ 'Anim': 'Animação', 
+ 'Comedy': 'Comédia', 
+ 'War': 'Guerra', 
+ 'Western': 'Velho Oeste', 
+ 'Musical': 'Musical', 
+ 'ACTION': 'Ação', 
+ 'Science-Fiction': 'Ficção', 
+ 'Unknown': 'Desconhecido', 
+ 'Acton': 'Ação', 
+ 'Ação': 'Ação', 
+ 'Comédia': 'Comédia', 
+ 'Biografia': 'Biografia', 
+ 'Ficção': 'Ficção', 
+ 'Animação': 'Animação', 
+ 'Aventura': 'Aventura', 
+ 'Guerra': 'Guerra', 
+ 'Documentário': 'Documentário', 
+ 'Suspense': 'Suspense', 
+ 'Família': 'Família', 
+ 'Mistério': 'Mistério', 
+ 'Terror': 'Terror'})
+
+print(df_imdb['moeda'].unique().tolist())
+
+
+df_imdb['moeda'] = df_imdb['moeda'].replace(
+  {'Dólar Americano' : 'Dólar', 
+   'Dólar Neozelandês': 'Dólar', 
+   'Euro': 'Euro', 
+   'Dólar Australiano': 'Dólar', 
+   np.nan : 'Desconhecido', 
+   'Zloty': 'Zloty', 
+   'Real' : 'Real', 
+   'Iene' : 'Iene', 
+   'Won' : 'Won', 
+   'Libra Esterlina' : 'Libra', 
+   'Dólar' : 'Dólar', 
+   'Libra' : 'Libra', 
+   'Dólar neozelandês': 'Dólar'})
+
+print(df_imdb['moeda'].unique().tolist())
 

@@ -4,7 +4,7 @@
 
 import pandas as pd
 
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
+caminho = r"dados\dados_excel\filmes_imdb.xlsx"
 df_imdb = pd.read_excel(caminho)
 
 # -----------------------------------------------------------
@@ -45,3 +45,11 @@ df_imdb.drop_duplicates(
 df_imdb.reset_index(drop=True, inplace=True)
 
 print(f"\nLinhas após remoção de duplicatas: {len(df_imdb)}")
+
+
+
+#Forma correta de remover uma linha
+#  Remover pelo índice
+df_imdb = df_imdb.drop(2)
+# ou 
+df_imdb = df_imdb.drop(index=2)

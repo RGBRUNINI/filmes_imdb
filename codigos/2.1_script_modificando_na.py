@@ -19,155 +19,224 @@ Isso é ótimo para praticar a modificação de células específicas usando .lo
 
 # MÉTODOS/FORMAS POSSÍVEIS DE RESOLVE RO PROBLEMA 
 
-# 1
-# ============================================================
-# MODIFICANDO UMA CÉLULA ESPECÍFICA COM .loc[]
-# ============================================================
 
-import pandas as pd
+"""
+============================================================
+SCRIPT: Tratamento de dados pontuais no dataset filmes_imdb
+============================================================
 
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
-df_imdb = pd.read_excel(caminho)
+OBJETIVO:
+Corrigir valores ausentes (NaN) ou inconsistentes em linhas específicas
+do dataset utilizando diferentes abordagens do Pandas.
 
-# -----------------------------------------------------------
-# SINTAXE BÁSICA:
-# df.loc[índice_da_linha, 'nome_da_coluna'] = novo_valor
-#
-# → índice_da_linha: número da linha no DataFrame (começa em 0)
-# → 'nome_da_coluna': exatamente o nome da coluna
-# → novo_valor: o valor que você quer inserir
-# -----------------------------------------------------------
+ESTRATÉGIAS ABORDADAS:
+1. Edição direta por índice com .loc[]
+2. Localização dinâmica por conteúdo (filtro)
+3. Atualização segura apenas quando o valor está vazio (NaN)
 
-# CASO 1: Inglourious Basterds (index 36) — bilheteria vazia
-# O filme arrecadou $321.5 milhões de dólares
-df_imdb.loc[36, 'bilheteria_dolares'] = 321500000
-
-print("Linha 36 após correção:")
-print(df_imdb.loc[36, ['titulo', 'bilheteria_dolares']])
-
-# -----------------------------------------------------------
-
-# CASO 2: Pulp Fiction (index 42) — duração vazia
-# O filme tem 154 minutos de duração
-df_imdb.loc[42, 'duracao_min'] = 154
-
-print("\nLinha 42 após correção:")
-print(df_imdb.loc[42, ['titulo', 'duracao_min']])
-
-# -----------------------------------------------------------
-
-# CASO 3: Forrest Gump duplicata (index 46) — data_lancamento vazia
-# Data de lançamento: 06 de julho de 1994
-df_imdb.loc[46, 'data_lancamento'] = pd.Timestamp('1994-07-06')
-
-print("\nLinha 46 após correção:")
-print(df_imdb.loc[46, ['titulo', 'data_lancamento']])
-
-# -----------------------------------------------------------
-
-# CASO 4: Linha 49 — título vazio (linha sem nome de filme)
-# Vamos nomear como 'Desconhecido' para manter o registro
-df_imdb.loc[49, 'titulo'] = 'Desconhecido'
-
-print("\nLinha 49 após correção:")
-print(df_imdb.loc[49, ['titulo', 'ano_lancamento', 'genero']])
-
-print("\nFim do script de modificação de células específicas: Método 1.")
-
-# ===========================================================================
-
-
-# 2
+IMPORTANTE:
+- O DataFrame é carregado UMA única vez (evita perda de estado)
+- Sempre validamos filtros antes de acessar .index[0]
+"""
 
 # ============================================================
-# LOCALIZANDO A LINHA PELO CONTEÚDO E DEPOIS EDITANDO
-# ============================================================
-
-import pandas as pd
-
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
-df_imdb = pd.read_excel(caminho)
-
-# -----------------------------------------------------------
-# PASSO 1: Encontrar o índice da linha pelo título do filme
-# .index retorna os índices das linhas onde a condição é True
-# [0] pega o primeiro resultado encontrado
-# -----------------------------------------------------------
-indice = df_imdb[df_imdb['titulo'] == 'Inglourious Basterds'].index[0]
-
-print(f"Índice encontrado para 'Inglourious Basterds': {indice}")
-
-# PASSO 2: Usar o índice encontrado para corrigir a célula
-df_imdb.loc[indice, 'bilheteria_dolares'] = 321500000
-
-print(f"Valor corrigido: {df_imdb.loc[indice, 'bilheteria_dolares']}")
-
-# -----------------------------------------------------------
-# EXEMPLO EXTRA: Corrigindo múltiplas colunas de UMA vez
-# na mesma linha usando um dicionário
-# -----------------------------------------------------------
-
-# Queremos preencher nome_pais, continente e idioma_principal
-# para a linha 47 (Unknown Movie) que tem #N/A
-indice_unknown = df_imdb[df_imdb['titulo'] == 'Unknown Movie'].index[0]
-
-# Atualizando várias colunas de uma vez com .loc e um dicionário
-df_imdb.loc[indice_unknown, ['nome_pais', 'continente', 'idioma_principal']] = [
-    'França',   # nome_pais
-    'Europa',   # continente
-    'Francês'   # idioma_principal
-]
-
-print("\nUnknown Movie após correção:")
-print(df_imdb.loc[indice_unknown,
-      ['titulo', 'nome_pais', 'continente', 'idioma_principal']])
-
-
-print("\nFim do script de modificação de células específicas: Método 2.")
-
-# ===========================================================================
-
-# 3
-
-# ============================================================
-# PREENCHENDO SOMENTE CÉLULAS VAZIAS (NaN)
-# SEM SOBRESCREVER VALORES EXISTENTES
+# IMPORTAÇÃO DE BIBLIOTECAS
 # ============================================================
 
 import pandas as pd
 import numpy as np
 
-caminho = r"filmes_imdb\dados\dados_excel\filmes_imdb.xlsx"
+
+# ============================================================
+# CARREGAMENTO DO DATAFRAME
+# ============================================================
+
+"""
+Carrega o arquivo Excel para um DataFrame Pandas.
+
+ATENÇÃO:
+Este carregamento deve ser feito apenas uma vez.
+Recarregar o DataFrame no meio do script faz perder alterações anteriores.
+"""
+
+caminho = r"dados\dados_excel\filmes_imdb.xlsx"
 df_imdb = pd.read_excel(caminho)
 
-# -----------------------------------------------------------
-# PASSO 1: Verificar se a célula está realmente vazia
-# pd.isna() retorna True se o valor for NaN, None ou NaT
-# Usamos isso como uma "trava de segurança" antes de editar
-# -----------------------------------------------------------
 
-linha   = 36                    # índice da linha
-coluna  = 'bilheteria_dolares'  # coluna que queremos verificar
+# ============================================================
+# MÉTODO 1 — MODIFICAÇÃO DIRETA USANDO ÍNDICE (.loc)
+# ============================================================
+
+"""
+Neste método, usamos o índice da linha diretamente.
+
+SINTAXE:
+df.loc[indice_linha, 'nome_coluna'] = novo_valor
+
+VANTAGENS:
+- Simples e direto
+- Mais rápido quando o índice é conhecido
+
+DESVANTAGEM:
+- Depende de conhecer o índice exato da linha
+"""
+
+print("\n========== MÉTODO 1 ==========")
+
+# CASO 1: Corrigir bilheteria ausente
+df_imdb.loc[36, 'bilheteria_dolares'] = 321500000
+
+# CASO 2: Corrigir duração ausente
+df_imdb.loc[42, 'duracao_min'] = 154
+
+# CASO 3: Corrigir data de lançamento ausente
+df_imdb.loc[46, 'data_lancamento'] = pd.Timestamp('1994-07-06')
+
+# CASO 4: Corrigir título vazio
+df_imdb.loc[49, 'titulo'] = 'Desconhecido'
+
+# Visualização das alterações
+print(df_imdb.loc[[36, 42, 46, 49],
+      ['titulo', 'bilheteria_dolares', 'duracao_min', 'data_lancamento']])
+
+
+# ============================================================
+# MÉTODO 2 — LOCALIZAÇÃO POR CONTEÚDO (FILTRO)
+# ============================================================
+
+"""
+Neste método, não usamos o índice diretamente.
+Primeiro encontramos a linha com base em um valor (ex: título),
+depois utilizamos o índice encontrado para editar.
+
+PASSOS:
+1. Criar um filtro (condição)
+2. Validar se encontrou alguma linha
+3. Pegar o índice com .index[0]
+4. Aplicar a modificação com .loc[]
+
+VANTAGENS:
+- Mais flexível
+- Funciona mesmo sem saber o índice
+
+CUIDADO:
+- Sempre verificar se o filtro NÃO está vazio
+"""
+
+print("\n========== MÉTODO 2 ==========")
+
+# ------------------------------------------------------------
+# EXEMPLO 1: Inglourious Basterds
+# ------------------------------------------------------------
+
+filtro = df_imdb[df_imdb['titulo'] == 'Inglourious Basterds']
+
+if not filtro.empty:
+    indice = filtro.index[0]
+
+    df_imdb.loc[indice, 'bilheteria_dolares'] = 321500000
+
+    print(f"Filme corrigido no índice: {indice}")
+    print(df_imdb.loc[indice, ['titulo', 'bilheteria_dolares']])
+else:
+    print("Filme 'Inglourious Basterds' não encontrado")
+
+
+# ------------------------------------------------------------
+# EXEMPLO 2: Linha com título 'Desconhecido'
+# ------------------------------------------------------------
+
+filtro_unknown = df_imdb[df_imdb['titulo'] == 'Desconhecido']
+
+if not filtro_unknown.empty:
+    indice_unknown = filtro_unknown.index[0]
+
+    df_imdb.loc[indice_unknown,
+                ['nome_pais', 'continente', 'idioma_principal']] = [
+        'França',
+        'Europa',
+        'Francês'
+    ]
+
+    print("\nLinha 'Desconhecido' após correção:")
+    print(df_imdb.loc[indice_unknown,
+          ['titulo', 'nome_pais', 'continente', 'idioma_principal']])
+else:
+    print("Nenhuma linha com título 'Desconhecido' encontrada")
+
+
+# ============================================================
+# MÉTODO 3 — PREENCHIMENTO SEGURO (SOMENTE SE NaN)
+# ============================================================
+
+"""
+Neste método, garantimos que só alteramos a célula se ela estiver vazia.
+
+FUNÇÃO UTILIZADA:
+pd.isna(valor)
+
+RETORNA:
+- True  → valor é NaN, None ou NaT
+- False → valor já existe
+
+VANTAGEM:
+- Evita sobrescrever dados válidos
+"""
+
+print("\n========== MÉTODO 3 ==========")
+
+linha = 36
+coluna = 'bilheteria_dolares'
 
 if pd.isna(df_imdb.loc[linha, coluna]):
-    # A célula está vazia → podemos preencher com segurança
     df_imdb.loc[linha, coluna] = 321500000
-    print(f"Célula preenchida com sucesso na linha {linha}!")
+    print(f"Célula preenchida na linha {linha}")
 else:
-    # A célula já tem dado → não fazemos nada
-    print(f"Atenção: a linha {linha} já tem valor: {df_imdb.loc[linha, coluna]}")
+    print(f"Linha {linha} já possui valor: {df_imdb.loc[linha, coluna]}")
 
-# -----------------------------------------------------------
-# VERIFICAÇÃO FINAL: Mostrar a linha completa após a edição
-# -----------------------------------------------------------
+# Visualização da linha completa
 print("\nLinha completa após verificação:")
 print(df_imdb.loc[linha])
 
-print("\nFim do script de modificação de células específicas: Método 3.")
 
-# ===========================================================================
+# ============================================================
+# SALVANDO O RESULTADO (OPCIONAL)
+# ============================================================
+
+"""
+Salva o DataFrame tratado em um novo arquivo Excel.
+
+IMPORTANTE:
+- index=False evita salvar a coluna de índice no arquivo
+"""
+
+# df_imdb.to_excel(
+#     r"dados\dados_excel\filmes_imdb_tratado.xlsx",
+#     index=False
+# )
 
 
+# ============================================================
+# RESUMO FINAL
+# ============================================================
+
+"""
+QUANDO USAR CADA MÉTODO:
+
+✔ Método 1 (.loc com índice)
+→ Quando você sabe exatamente a linha
+
+✔ Método 2 (filtro + index)
+→ Quando você conhece um valor (ex: título), mas não o índice
+
+✔ Método 3 (pd.isna)
+→ Quando quer evitar sobrescrever dados existentes
+
+REGRA DE OURO:
+Nunca use .index[0] sem garantir que o filtro NÃO está vazio.
+"""
+
+print("\n========== FIM DO SCRIPT ==========")
 
 
 """
