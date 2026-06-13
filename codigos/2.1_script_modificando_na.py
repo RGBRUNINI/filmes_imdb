@@ -9,7 +9,7 @@ Linha  | (index)	| Filme	                 | Problema
 36     | (row 37)	| Inglourious Basterds   | bilheteria_dolares vazia
 42     | (row 43)	| Pulp Fiction	         | duracao_min vazia
 46     | (row 47)	| Forrest Gump	         | data_lancamento vazia
-49     |(row 50)	| (título vazio)         | titulo vazio
+49     | (row 50)	| (título vazio)         | titulo vazio
 ---------------------------------------------------------------------
 
 Obs.: Note que são problemas pontuais, ou seja, apenas um valor errado ou ausente em cada linha. 
